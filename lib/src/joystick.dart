@@ -153,7 +153,6 @@ class _JoystickState extends State<Joystick> {
 
   void _stickDragStart(Offset globalPosition) {
     _runCallback();
-    widget.listener(StickDragDetails(_stickOffset.dx, _stickOffset.dy));
     _startDragStickPosition = globalPosition;
     widget.onStickDragStart?.call();
   }
@@ -187,8 +186,14 @@ class _JoystickState extends State<Joystick> {
   }
 
   void _runCallback() {
-    _callbackTimer = Timer.periodic(widget.period, (timer) {
+    Timer.periodic(widget.period,(Timer timer){
       widget.listener(StickDragDetails(_stickOffset.dx, _stickOffset.dy));
+      if(widget.period.inMilliseconds == 100){
+        timer.cancel();
+        _callbackTimer = Timer.periodic(const Duration(milliseconds: 1000), (timer) {
+          widget.listener(StickDragDetails(_stickOffset.dx, _stickOffset.dy));
+        });
+      }
     });
   }
 
